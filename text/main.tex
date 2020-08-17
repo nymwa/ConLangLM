@@ -1,0 +1,241 @@
+\documentclass[11pt]{report}
+
+% font
+\usepackage{fontspec}
+\setmainfont[Ligatures=TeX]{IPAexMincho}
+\usepackage{xeCJK}
+\setCJKmainfont{IPAexMincho}
+
+% chapter
+\usepackage{titlesec}
+\titleformat{\chapter}[hang]
+	{\normalfont\LARGE\sffamily\bfseries}{第 \thechapter 章}{1em}{}
+\titlespacing*{\chapter}{0pt}{3.5ex plus 1ex minus .2ex}{2.3 ex plus .2ex}
+
+% title
+\usepackage{titling}
+\newcommand{\subtitle}[1]{%
+	\posttitle{%
+	\par\end{center}
+	\begin{center}\large#1\end{center}
+	\vskip0.5em}%
+}
+\title{架空世界創作のための言語モデル}
+\subtitle{〜統計と計算を言語に組み込む文明的創作のあり方を模索する〜}
+\author{@nymwa}
+\date{2020/**/**}
+
+% graphic
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{colortbl}
+
+% tikz
+\usepackage{tikz}
+\usetikzlibrary{automata}
+\usetikzlibrary{arrows}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{positioning}
+\usetikzlibrary{intersections, calc}
+\usetikzlibrary{decorations}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{decorations.pathreplacing,angles,quotes}
+\usetikzlibrary{fit}
+\usetikzlibrary{math}
+\usetikzlibrary{shapes}
+
+% href言語モデル
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,
+	urlcolor=cyan,
+	pdfnewwindow=true}
+\newcommand{\link}[2]{{\footnotesize (\href{#2}{#1})}}
+
+% math
+\usepackage{amsmath,amssymb,amsthm}
+\newtheorem{theorem}{定理}
+\newtheorem{definition}[theorem]{定義}
+\newtheorem{axiom}[theorem]{公理}
+\usepackage{bm}
+
+% listings
+\usepackage{listings}
+\lstset{
+	backgroundcolor = {\color[rgb]{0,0,0}},
+	basicstyle      = {\color[rgb]{1.0, 1.0, 1.0} \small\ttfamily},
+	identifierstyle = {\color[rgb]{0.7, 0.7, 1.0} \small},
+	commentstyle    = {\color[rgb]{1.0, 0.5, 0.0} \small\ttfamily},
+	keywordstyle    = {\color[rgb]{1.0, 1.0, 0.0} \small\bfseries},
+	ndkeywordstyle  = {\color[rgb]{0.8, 0.8, 0.8} \small},
+	stringstyle     = {\color[rgb]{0.0, 1.0, 0.0} \small\ttfamily},
+	frame           = {tlb},
+	framesep        = 1pt,
+	breaklines      = true,
+	columns         = [l]{fullflexible},
+	xrightmargin    = 20pt,
+	xleftmargin     = 20pt,
+	morecomment=[l]{//}
+}
+
+% other
+\usepackage{caption}
+\usepackage{cancel}
+\usepackage{epigraph}
+\usepackage{fancybox}
+\usepackage{makecell}
+
+\setlength\epigraphwidth{8cm}
+\setlength\epigraphrule{0pt}
+
+\newcommand{\argmax}{\mathop{\rm argmax}\limits}
+\newcommand{\argmin}{\mathop{\rm argmin}\limits}
+\newcommand{\cnt}{\mathop{\rm count}\limits}
+
+\begin{document}
+
+\maketitle
+
+\renewcommand{\contentsname}{目次}
+\tableofcontents
+
+\chapter{はじめに}
+
+私は架空世界における言語創作，一般に人工言語と呼ばれているものと，
+計算機で言語を扱う学問，理学的には計算言語学，工学的には自然言語処理と呼ばれているものが好きです．
+そのような立場として，架空世界における言語創作に計算言語学的な知見が応用できる可能性があるのかと考えることがあります．
+
+当然指輪物語が書かれた時代に計算機はなかったですし，
+計算機は言語創作においては必ず必要なものではないかもしれません．
+しかし，計算言語学の知見はかな漢字変換や綴り誤り訂正，
+機械翻訳や対話システムなど身の回りにある多くのツールに活かされており，
+その成果を人工言語へ適用すれば，
+語彙や例文も微々たる架空言語に対してそのような便利なツールが製作できるでしょう．
+言語創作に計算機を簡単に応用できるようなツールが多くの人によって作られれば，
+創作者だけでなく，学習者にとっても利点があるものと信じています．
+
+一方で，計算言語学や自然言語処理の発展も，そのほとんどが高々ここ半世紀のうちに成し遂げられたものに過ぎず，
+昨今の機械翻訳や対話システムが人間から見て不自然な挙動をする事例からも明らかなように，
+現時点では計算機で言語を扱うことは非常に難しく，また，高い精度で行おうとすれば大規模な計算機資源が必要になってしまうこともあります．
+
+そのため，今回はCPUが１つあればできるような軽量な計算で実現できる古典的な手法のみを用いて
+計算と統計によって言語創作に有益なツールが作れるのかどうかを模索することに焦点を置いています．
+特に，簡単に実装・実用が可能な言語モデルと呼ばれるものを用いた応用について検討していきます．
+
+この文書によって人工言語界隈に前よりちょっとだけ計算言語学が普及して
+いい感じなツールが生まれてくれば嬉しいです．
+
+本書で使用するプログラムはすべてpython 3.8で書かれます．
+実行環境は標準的なUNIX/linux環境を想定しています．
+なんか動かなかったりよくわからない場合は twitter:@nymwa に文句を言ってください．頑張って答えます．
+
+\chapter{言語モデルと確率}
+
+以下の２文を見比べてみてください．
+\begin{itemize}
+	\item 色を着けてニスを塗った．
+	\item 色を着けテニスを塗った．
+\end{itemize}
+最初の文が自然な文であるのに対し，２番目の文は意味をなさない不自然な文となっています．
+この２文は日本語の話者であればどちらが自然か，不自然かは容易に見分けられます．
+「テニス」と「塗る」はふつう共起しないことからも，後者の文が不自然なことが説明できます．
+
+しかし，かな漢字変換システムでは後者が最初に候補として示されることもあるかもしれません．
+これは計算機にとっては人間にとっての文の自然さ・不自然さを理解することが容易ではないためです．
+計算機と人間の構造が違っているのだからこれはしょうがないことではあるのですが，
+裏を返せば，計算機に文の自然さを判定させられるようになれば，
+かな漢字変換や綴り誤り訂正システムなどの便利なソフトウェアが作れるということでもあります．
+
+ここで，理想的に世の中のすべての文に対して，その文が出現する確率を考えることにします．
+例えば，「色を着けてニスを塗った．」の確率は
+\begin{equation*}
+	P(\mathrm{色を着けてニスを塗った．})
+\end{equation*}
+と書けます．
+自然な文や流暢な文は，不自然な文やぎこちない文よりも世の中のすべての文全体での出現頻度が高そうです．
+すると，「色を着けてニスを塗った．」は「色を着けテニスを塗った．」よりも自然な文なので，
+\begin{equation*}
+	P(\mathrm{色を着けてニスを塗った．})
+	>
+	P(\mathrm{色を着けテニスを塗った．})
+\end{equation*}
+となるはずです．
+このようにすれば，確率の計算によって自然な文と不自然な文を識別できそうです．
+
+文を確率変数とする確率分布のことを言語モデルといいます．
+言語モデルはテキスト中によく出てくる文に高い確率を割り当て，
+そうでない文に対しては低い確率を割り当てる必要があります．
+この章では言語モデルをどのように設計すればいいかについて，基礎的な事項を説明していきます．
+
+\section{ちょっと確率の復習}
+
+\begin{definition}[標本空間]
+	hoge
+\end{definition}
+
+\begin{definition}[試行]
+	hoge
+\end{definition}
+
+\begin{axiom}[確率の公理]
+	hoge
+\end{axiom}
+
+\begin{definition}[確率]
+	hoge
+\end{definition}
+
+\begin{definition}[確率変数]
+	hoge
+\end{definition}
+
+
+\begin{definition}[同時確率]
+	hoge
+\end{definition}
+
+\begin{definition}[周辺確率]
+	hoge
+\end{definition}
+
+\begin{definition}[条件付き確率]
+	hoge
+\end{definition}
+
+\begin{definition}[独立性]
+	hoge
+\end{definition}
+
+\begin{definition}[確率変数の期待値]
+	hoge
+\end{definition}
+
+\section{1-gram言語モデル}
+
+\chapter{トキポナ言語モデルを作る}
+
+\section{トキポナとは}
+
+\section{トキポナ単語分割器を作る}
+
+\chapter{造語支援システムを作る}
+
+\chapter{綴り誤り訂正システムを作る}
+
+\chapter{おわりに}
+
+\appendix
+\def\thesection{補遺\Alph{section}}
+
+\chapter{python 3.8のインストール}
+
+\chapter{python仮想環境のインストール}
+
+\chapter{本書サンプルコードのダウンロードと実行}
+
+\end{document}
+
