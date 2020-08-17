@@ -4,13 +4,15 @@
 
 ## 完成
 - corpus
- - tatoeba コーパス (https://tatoeba.org/eng/downloads)
- - tokipona1000文コーパス (twitter.com/tokipona1000)
+  - tatoeba コーパス (https://tatoeba.org/eng/downloads)
+  - tokipona1000文コーパス (twitter.com/tokipona1000)
 
 ## 未完成
 - corpus
   - いくつかのテキストを収録する可能性あり．
     - 主にtoki ponaだが，それ以外も検討．
+    - 新語提案と誤り訂正はエスペラントでやるのがいいのかという説がある
+      - ただし，使うコーパスを数千文から数万文，語彙を数千語に限らないと，一般の架空言語創作への応用としての利用方法を提示できないので，適切な文のみを精選して条件を満たすコーパスを作る必要がある．
 - tokenizer
   - tokipona tokenizer
     - 最低限の実装のみ完成
