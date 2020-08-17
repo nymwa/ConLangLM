@@ -9,8 +9,10 @@
 
 ## 未完成
 - corpus
- - いくつかのテキストを収録する可能性あり．
-  - 主にtoki ponaだが，それ以外も検討．
+  - いくつかのテキストを収録する可能性あり．
+    - 主にtoki ponaだが，それ以外も検討．
 - tokenizer
+  - tokipona tokenizer
+    - 最低限の実装のみ完成
 - lm
 - text
