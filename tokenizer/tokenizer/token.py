@@ -1,6 +1,8 @@
 import string
 
 class Token:
+	replace_proper_noun = False
+
 	def __str__(self):
 		return self.token
 
@@ -18,6 +20,16 @@ class CheckingToken(Token):
 	@classmethod
 	def check(self, token):
 		return False
+
+class ProperNounToken(Token):
+	tag = 'proper'
+
+	def __str__(self):
+		if self.replace_proper_noun:
+			x =  f'<{self.tag}>'
+		else:
+			x = self.token
+		return x
 
 class SpecialToken(Token):
 	def __init__(self, token):

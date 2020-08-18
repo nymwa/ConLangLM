@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-		name = 'tokenizer',
+		name = 'lm',
 		version = '0.1.0',
-		description = 'tokenizer',
+		description = 'language model',
 		author = 'nymwa',
 		classifiers = [ 
 			'Development Status :: 3 - Alpha',
@@ -12,7 +12,8 @@ setup(
 			'Topic :: Scientific/Engineering'],
 		entry_points = { 
 			'console_scripts':[
-				'tokipona-tokenize = tokenizer.tokipona.tokenization:main',
+				'train-unigram-lm = lm.unigram.lm:train',
+				'score-unigram-lm = lm.unigram.lm:score',
 				]})
 
 

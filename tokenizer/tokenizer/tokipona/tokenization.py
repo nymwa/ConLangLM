@@ -1,7 +1,8 @@
 import sys
 import re
+from argparse import ArgumentParser
 from tokenizer.tokenization import BasicTokenizer
-from tokenizer.token import SpecialToken, ASCIIPunctuationToken
+from tokenizer.token import Token, SpecialToken, ASCIIPunctuationToken
 from tokenizer.tokipona.token import TokiPonaToken, TokiPonaProperNounToken
 
 class TokiponaTokenizer(BasicTokenizer):
@@ -36,8 +37,14 @@ class TokiponaTokenizer(BasicTokenizer):
 				assert False, token
 		return lst
 
-
 def main():
+	parser = ArgumentParser()
+	parser.add_argument('--replace-proper-noun', action = 'store_true')
+	args = parser.parse_args()
+
+	if args.replace_proper_noun:
+		Token.replace_proper_noun = True
+
 	tokenizer = TokiponaTokenizer()
 	for line in sys.stdin:
 		print(' '.join([str(token) for token in tokenizer.tokenize(line)]))
