@@ -13,6 +13,7 @@ setup(
 		entry_points = { 
 			'console_scripts':[
 				'tokipona-tokenize = tokenizer.tokipona.tokenization:main',
+				'tokipona-vocabulary = tokenizer.tokipona.vocabulary:main',
 				]})
 
 

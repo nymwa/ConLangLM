@@ -8,7 +8,7 @@ class TokiPonaToken(CheckingToken):
 	def check(self, token):
 		return token in self.nimi_list
 
-class TokiPonaProperNounToken(CheckingToken, ProperNounToken):
+class TokiPonaProperNounToken(ProperNounToken, CheckingToken):
 	proper_noun_pattern = re.compile(r'^([AIUEO]|[KSNPML][aiueo]|[TJ][aueo]|W[aie])n?(([ksnpml][aiueo]|[tj][aueo]|w[aie])n?)*$')
 
 	@classmethod

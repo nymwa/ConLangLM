@@ -4,6 +4,11 @@
 
 用意するためにはtatoebaのDownloads ( https://tatoeba.org/eng/downloads ) からダウンロードするスクリプトdownload.shを実行してください．
 
+トークナイズは以下のコマンドで行ってください．
+```
+cut -f 3 toki_sentences.tsv | tokipona-tokenize --replace-proper-noun --remove-sentence-with-unk > tatoeba_tokenized.txt
+```
+
 ## tokipona1000
 
 raw.txtが生コーパスです．
